@@ -1,0 +1,50 @@
+{
+  "pageTitle": {
+    "title": "Top-up your mobile plan and",
+    "highlightedText": "stay connected!",
+    "description": "Confirm your phone number below to add a top-up of data or minutes to your mobile plan."
+  },
+  "phoneInput": {
+    "label": "Phone Number *",
+    "placeholder": "Enter your phone number",
+    "validationError": "Phone number must be at least 8 digits",
+    "submitError": "Please enter a valid phone number"
+  },
+  "button": {
+    "text": "Get confirmation code",
+    "loadingText": "Sending..."
+  },
+  "loading": {
+    "title": "Sending confirmation code...",
+    "subtitle": "Please wait"
+  },
+  "steps": {
+    "title": "How it works",
+    "items": [
+      {
+        "number": 1,
+        "title": "Confirm your phone number",
+        "description": "We will send you a confirmation code by text."
+      },
+      {
+        "number": 2,
+        "title": "Select a top-up",
+        "description": "You can add both data and more minutes."
+      },
+      {
+        "number": 3,
+        "title": "Wait for approval",
+        "description": "Your IT administrator will be notified and will inform you upon approval."
+      }
+    ]
+  },
+  "success": {
+    "title": "Confirmation code sent!",
+    "description": "Please check your phone for the SMS with your verification code."
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "We couldn't send the confirmation code. Please try again later.",
+    "buttonText": "Try again"
+  }
+}
