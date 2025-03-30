@@ -1,32 +1,33 @@
-import React from "react";
+import React, { useCallback } from "react";
+import clsx from "clsx"; // Import clsx for better conditional class management (npm install clsx)
 
-// Define clear prop types for better type safety and documentation
+// Define prop types with clear documentation
 interface ButtonProps {
   /**
-   * Function to call when button is clicked
+   * Function to execute when the button is clicked
    */
   onClick: () => void;
 
   /**
-   * Text to display inside the button
+   * Text displayed inside the button
    * @default "Click me"
    */
   text?: string;
 
   /**
-   * Sets the button to disabled state when true
+   * Disables the button when true
    * @default false
    */
   disabled?: boolean;
 
   /**
-   * Additional CSS classes to apply to the button
+   * Additional CSS classes for customization
    */
   className?: string;
 }
 
 /**
- * A reusable button component with consistent styling
+ * A reusable button component with optimized styling and event handling.
  *
  * @example
  * <BetterButton onClick={() => console.log('Clicked')} text="Submit" />
@@ -37,28 +38,32 @@ export default function BetterButton({
   disabled = false,
   className = "",
 }: ButtonProps) {
-  // Extract styles to Tailwind classes for better maintainability and consistency
-  // This also makes it easier to adapt to design system changes
-  const baseStyle = "bg-blue-600 text-white py-2 px-4 rounded";
-  const hoverStyle = "hover:bg-blue-700";
-  const disabledStyle = "opacity-50 cursor-not-allowed";
-
-  // Combine styles based on props
-  const buttonStyle = `
-    ${baseStyle}
-    ${!disabled ? hoverStyle : disabledStyle}
-    ${className}
-  `;
+  /**
+   * Using `useCallback` to prevent the `onClick` function
+   * from being recreated on every render.
+   * This improves performance, especially in lists or frequently re-rendered components.
+   */
+  const handleClick = useCallback(() => {
+    if (!disabled) onClick();
+  }, [onClick, disabled]);
 
   return (
     <button
-      onClick={onClick}
-      disabled={disabled}
-      className={buttonStyle}
-      type="button" // Explicit type for accessibility
-      aria-disabled={disabled} // Better accessibility
+      onClick={handleClick} // Executes the function only if `disabled` is false
+      disabled={disabled} // Disables the button in the browser
+      className={clsx(
+        "bg-blue-600 text-white py-2 px-4 rounded", // Base button styles
+        {
+          "hover:bg-blue-700": !disabled, // Applies hover effect if the button is active
+          "opacity-50 cursor-not-allowed": disabled, // Makes button appear disabled and prevents interaction
+        },
+        className // Adds custom classes passed as props
+      )}
+      type="button" // Explicitly defines the type to avoid unexpected behavior
+      aria-disabled={disabled} // Improves accessibility for screen readers
+      aria-pressed={disabled} // Indicates the button's interactive state
     >
-      {text}
+      {text} {/* Displays the button text */}
     </button>
   );
 }
