@@ -1,7 +1,7 @@
 interface PageTitleProps {
   title: string;
   highlightedText?: string;
-  description: string;
+  description?: string;
 }
 
 export default function PageTitle({
@@ -10,7 +10,7 @@ export default function PageTitle({
   description,
 }: PageTitleProps) {
   return (
-    <div className="mb-6">
+    <div>
       <h1 className="text-3xl font-bold mb-2">
         {title}
         {highlightedText && (

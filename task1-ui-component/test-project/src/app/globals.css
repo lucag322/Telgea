@@ -36,8 +36,10 @@
 
 @theme inline {
   --color-background: var(--background);
+  --color-secondary-background: var(--secondary-background);
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
+  --color-custom-white: var(--custom-white);
   --color-foreground: var(--foreground);
   --color-secondary-foreground: var(--secondary-foreground);
   --font-selecta: "Selecta", sans-serif;
@@ -49,10 +51,12 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #f2f1ed;
+    --secondary-background: #e9e7e2;
     --primary: #c8ff00;
     --secondary: #1f1f1f;
+    --custom-white: #ffffff;
     --foreground: #000000;
-    --secondary-foreground: #5a5a5a;
+    --secondary-foreground: #797977;
     --rounded-md: 16px;
     --rounded-sm: 10px;
   }

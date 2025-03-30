@@ -14,6 +14,8 @@
     "text": "Get confirmation code",
     "loadingText": "Sending...",
     "continueText": "Continue",
+    "backText": "Back",
+    "requestText": "Request Top-up",
     "doneText": "Done"
   },
   "loading": {
@@ -47,9 +49,30 @@
       }
     ]
   },
+  "dateSelector": {
+    "title": "When should the top-up be activated?",
+    "daysOfWeek": ["Mo", "Tu", "We", "Th", "Fr", "Sat", "Su"],
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "today": "Today",
+    "tomorrow": "Tomorrow"
+  },
   "success": {
     "title": "Success!",
-    "message": "Your top-up request has been submitted."
+    "message": "Your top-up request has been submitted.",
+    "withDate": "Your top-up request has been submitted to be activated on {date}."
   },
   "steps": {
     "title": "How it works",
@@ -70,5 +93,27 @@
         "description": "Your IT administrator will be notified and will inform you upon approval."
       }
     ]
+  },
+  "header": {
+    "cancelButton": "Cancel"
+  },
+  "ui": {
+    "backToOptions": "Back to options",
+    "selectDate": "Select a date",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "selectableDate": "Selectable date",
+    "nonSelectableDate": "Non-selectable date",
+    "selectedDate": "Selected date"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Network error. Please check your connection.",
+    "dateInPast": "Cannot select a date in the past."
+  },
+  "notifications": {
+    "topUpRequested": "Top-up requested successfully.",
+    "topUpScheduled": "Top-up scheduled for {date}.",
+    "topUpCancelled": "Top-up request cancelled."
   }
 }

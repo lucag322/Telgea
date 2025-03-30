@@ -12,7 +12,7 @@ interface TopUpFormProps {
 }
 
 export default function TopUpForm({ onSubmit }: TopUpFormProps) {
-  const [phoneNumber, setPhoneNumber] = useState("34426798");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneError, setPhoneError] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -51,7 +51,7 @@ export default function TopUpForm({ onSubmit }: TopUpFormProps) {
     <>
       {isLoading && <LoadingOverlay />}
 
-      <div>
+      <>
         <PageTitle
           title={pageTitle.title}
           highlightedText={pageTitle.highlightedText}
@@ -75,7 +75,7 @@ export default function TopUpForm({ onSubmit }: TopUpFormProps) {
         </Button>
 
         <StepsList title={steps.title} steps={steps.items} />
-      </div>
+      </>
     </>
   );
 }

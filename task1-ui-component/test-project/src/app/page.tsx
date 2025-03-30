@@ -1,27 +1,110 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TopUpForm from "./components/TopUpForm";
 import ErrorOverlay from "./components/ui/ErrorOverlay";
 import LoadingOverlay from "./components/ui/LoadingOverlay";
+import RequestErrorOverlay from "./components/ui/RequestErrorOverlay";
 import TopUpOptions from "./components/TopUpOptions";
-import Button from "./components/ui/Button";
+import { useUI } from "./context/UIContext";
 import { topUpPageData } from "@/data";
+import TopUpDateSelection from "./components/TopUpDateSelector";
+import CountrySelector from "./components/CountrySelector";
+import InternationalDataOptions from "./components/InternationalDataOptions";
+import InternationalDataDateSelector from "./components/InternationalDataDateSelector";
+import SuccessConfirmation from "./components/SuccessConfirmation";
+
+type Step =
+  | "form"
+  | "options"
+  | "dateSelect"
+  | "countrySelect"
+  | "internationalDataOptions"
+  | "internationalDateSelect"
+  | "success";
+
+interface Country {
+  code: string;
+  name: string;
+  flag: string;
+}
+
+interface InternationalDataOption {
+  id: string;
+  title: string;
+  countryName: string;
+}
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState<
-    "form" | "options" | "success"
-  >("form");
+  const [localStep, setLocalStep] = useState<Step>("form");
   const [isLoading, setIsLoading] = useState(false);
   const [showError, setShowError] = useState(false);
-  // Supprimons cette ligne puisqu'elle n'est pas utilisée
-  // const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [showRequestError, setShowRequestError] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<{
+    id: string;
+    title: string;
+    subtitle: string;
+  } | null>(null);
+  const [activationDate, setActivationDate] = useState<Date | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const [selectedDataOption, setSelectedDataOption] =
+    useState<InternationalDataOption | null>(null);
+  const [previousStep, setPreviousStep] = useState<Step>("form");
 
-  // Ou utilisons-la pour stocker l'option sélectionnée
-  const [selectedTopUp, setSelectedTopUp] = useState<string | null>(null);
+  const { setShowHeaderCancel, setOnHeaderCancel, setCurrentStep } = useUI();
+
+  const updateStep = (step: Step) => {
+    setLocalStep(step);
+    setCurrentStep(step);
+  };
+
+  useEffect(() => {
+    const handleCancel = () => {
+      if (localStep === "options") {
+        updateStep("form");
+      } else if (localStep === "dateSelect") {
+        updateStep("options");
+      } else if (localStep === "countrySelect") {
+        updateStep("options");
+      } else if (localStep === "internationalDataOptions") {
+        updateStep("countrySelect");
+      } else if (localStep === "internationalDateSelect") {
+        updateStep("internationalDataOptions");
+      }
+
+      if (localStep === "internationalDateSelect") {
+        setSelectedDataOption(null);
+      } else if (localStep === "internationalDataOptions") {
+        setSelectedCountry(null);
+      } else if (localStep === "options") {
+        setSelectedOption(null);
+      }
+    };
+
+    if (
+      [
+        "options",
+        "dateSelect",
+        "countrySelect",
+        "internationalDataOptions",
+        "internationalDateSelect",
+      ].includes(localStep)
+    ) {
+      setShowHeaderCancel(true);
+      setOnHeaderCancel(() => handleCancel);
+    } else {
+      setShowHeaderCancel(false);
+      setOnHeaderCancel(null);
+    }
+
+    return () => {
+      setShowHeaderCancel(false);
+      setOnHeaderCancel(null);
+    };
+  }, [localStep, setShowHeaderCancel, setOnHeaderCancel, setCurrentStep]);
 
   const handlePhoneSubmit = (success: boolean) => {
     if (success) {
-      setCurrentStep("options");
+      updateStep("options");
     } else {
       setShowError(true);
     }
@@ -32,20 +115,81 @@ export default function Home() {
   };
 
   const handleOptionSelect = (optionId: string) => {
-    // Utilisons la variable ici
-    setSelectedTopUp(optionId);
-    setIsLoading(true);
+    const option = topUpOptions.find((opt) => opt.id === optionId);
+    if (option) {
+      setSelectedOption(option);
 
-    // Simuler une requête API
+      if (optionId === "data5gb" || optionId === "minutes200") {
+        updateStep("dateSelect");
+      } else if (optionId === "dataInt") {
+        updateStep("countrySelect");
+      }
+    }
+  };
+
+  const handleCountrySelect = (country: Country) => {
+    setSelectedCountry(country);
+    updateStep("internationalDataOptions");
+  };
+
+  const handleInternationalDataOptionSelect = (
+    option: InternationalDataOption
+  ) => {
+    setSelectedDataOption(option);
+    updateStep("internationalDateSelect");
+  };
+
+  const handleBack = () => {
+    if (localStep === "dateSelect") {
+      updateStep("options");
+    } else if (localStep === "countrySelect") {
+      updateStep("options");
+    } else if (localStep === "internationalDataOptions") {
+      updateStep("countrySelect");
+    } else if (localStep === "internationalDateSelect") {
+      updateStep("internationalDataOptions");
+    } else {
+      updateStep("form");
+    }
+  };
+
+  const handleRequestTopUp = (date: Date) => {
+    setActivationDate(date);
+    setIsLoading(true);
+    setPreviousStep(localStep);
+
     setTimeout(() => {
       setIsLoading(false);
-      setCurrentStep("success");
+      const isSuccess = Math.random() > 0.3;
+
+      if (isSuccess) {
+        updateStep("success");
+      } else {
+        setShowRequestError(true);
+      }
     }, 2000);
   };
 
-  const handleCancel = () => {
-    setCurrentStep("form");
-    setSelectedTopUp(null); // Réinitialisons la variable
+  const handleRequestRetry = () => {
+    setShowRequestError(false);
+    setIsLoading(true);
+
+    setTimeout(() => {
+      setIsLoading(false);
+      updateStep("success");
+    }, 1500);
+  };
+
+  const handleContactSupport = () => {
+    setShowRequestError(false);
+  };
+
+  const handleCloseSuccess = () => {
+    updateStep("form");
+    setSelectedOption(null);
+    setSelectedCountry(null);
+    setSelectedDataOption(null);
+    setActivationDate(null);
   };
 
   const topUpOptions = [
@@ -79,40 +223,66 @@ export default function Home() {
         />
       )}
 
-      <div className="w-full max-w-md">
-        {currentStep === "form" && <TopUpForm onSubmit={handlePhoneSubmit} />}
+      {showRequestError && (
+        <RequestErrorOverlay
+          onRetry={handleRequestRetry}
+          onContactSupport={handleContactSupport}
+        />
+      )}
 
-        {currentStep === "options" && (
-          <TopUpOptions
-            userName="Name"
-            options={topUpOptions}
-            onSelect={handleOptionSelect}
-            onCancel={handleCancel}
-          />
-        )}
+      <div className="flex flex-col items-center justify-center">
+        <div className="w-full max-w-md">
+          {localStep === "form" && <TopUpForm onSubmit={handlePhoneSubmit} />}
 
-        {currentStep === "success" && (
-          <div className="bg-white p-6 rounded-lg">
-            <h2 className="text-xl font-bold mb-2">
-              {topUpPageData.success.title}
-            </h2>
-            <p className="mb-4">
-              {topUpPageData.success.message}
-              {selectedTopUp &&
-                ` (${
-                  topUpOptions.find((opt) => opt.id === selectedTopUp)?.title
-                })`}
-            </p>
-            <Button
-              variant="primary"
-              size="md"
-              fullWidth
-              onClick={() => setCurrentStep("form")}
-            >
-              Done
-            </Button>
-          </div>
-        )}
+          {localStep === "options" && (
+            <TopUpOptions
+              userName="Name"
+              options={topUpOptions}
+              onSelect={handleOptionSelect}
+            />
+          )}
+
+          {localStep === "dateSelect" && selectedOption && (
+            <TopUpDateSelection
+              selectedOption={selectedOption}
+              onBack={handleBack}
+              onRequestTopUp={handleRequestTopUp}
+            />
+          )}
+
+          {localStep === "countrySelect" && (
+            <CountrySelector
+              onBack={handleBack}
+              onSelect={handleCountrySelect}
+            />
+          )}
+
+          {localStep === "internationalDataOptions" && selectedCountry && (
+            <InternationalDataOptions
+              selectedCountry={selectedCountry}
+              onBack={handleBack}
+              onSelectOption={handleInternationalDataOptionSelect}
+            />
+          )}
+
+          {localStep === "internationalDateSelect" &&
+            selectedCountry &&
+            selectedDataOption && (
+              <InternationalDataDateSelector
+                selectedCountry={selectedCountry}
+                selectedDataOption={selectedDataOption}
+                onBack={handleBack}
+                onRequestTopUp={handleRequestTopUp}
+              />
+            )}
+
+          {localStep === "success" && (
+            <SuccessConfirmation
+              activationDate={activationDate || undefined}
+              onClose={handleCloseSuccess}
+            />
+          )}
+        </div>
       </div>
     </>
   );

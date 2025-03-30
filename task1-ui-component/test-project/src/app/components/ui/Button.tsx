@@ -4,7 +4,7 @@ export type ButtonVariant =
   | "primary"
   | "secondary"
   | "outline"
-  | "danger"
+  | "ghost"
   | "success";
 export type ButtonSize = "sm" | "md" | "lg";
 
@@ -26,11 +26,13 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const variantStyles = {
-    primary: "bg-secondary text-white hover:bg-primary",
-    secondary: "bg-[#e0ff4f] text-black hover:bg-[#d5f03c] active:bg-[#c8e033]",
+    primary: "bg-secondary text-white hover:bg-primary cursor-pointer",
+    secondary:
+      "bg-custom-white text-foreground hover:bg-custom-white/80 cursor-pointer",
     outline:
       "bg-transparent border border-black text-black hover:bg-black/5 active:bg-black/10",
-    danger: "bg-red-600 text-white hover:bg-red-700 active:bg-red-800",
+    ghost:
+      "text-lg text-secondary-foreground hover:text-gray-600 transition-colors",
     success: "bg-green-600 text-white hover:bg-green-700 active:bg-green-800",
   };
 
