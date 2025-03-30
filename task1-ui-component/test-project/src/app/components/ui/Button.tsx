@@ -1,11 +1,6 @@
 import { ButtonHTMLAttributes } from "react";
 
-export type ButtonVariant =
-  | "primary"
-  | "secondary"
-  | "outline"
-  | "ghost"
-  | "success";
+export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
 export type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -32,8 +27,7 @@ export default function Button({
     outline:
       "bg-transparent border border-black text-black hover:bg-black/5 active:bg-black/10",
     ghost:
-      "text-lg text-secondary-foreground hover:text-gray-600 transition-colors",
-    success: "bg-green-600 text-white hover:bg-green-700 active:bg-green-800",
+      "text-lg cursor-pointer text-secondary-foreground hover:text-gray-600 transition-colors  hover:underline",
   };
 
   // Définition des styles selon les tailles

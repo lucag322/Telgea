@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import Button from "./ui/Button";
 import PageTitle from "./ui/PageTitle";
-import Image from "next/image";
+import { topUpPageData } from "@/data";
 
 interface InternationalDataOption {
   id: string;
@@ -25,15 +26,16 @@ export default function InternationalDataOptions({
   onSelectOption,
 }: InternationalDataOptionsProps) {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
+  const { countrySelector, internationalDataOptions } = topUpPageData;
 
   const dataOptions: InternationalDataOption[] = [
     {
-      id: "1gb",
+      id: "data500mb",
       title: "+ 1GB Fast Data",
       countryName: selectedCountry.name,
     },
     {
-      id: "5gb",
+      id: "data1gb",
       title: "+ 5GB Fast Data",
       countryName: selectedCountry.name,
     },
@@ -57,7 +59,7 @@ export default function InternationalDataOptions({
   return (
     <div className="flex flex-col h-full min-h-[calc(100vh-150px)]">
       <div>
-        <PageTitle title="Top up International Data" />
+        <PageTitle title={countrySelector.title} />
 
         <div className="flex items-center mb-6">
           <div className="w-12 h-12 mr-3 overflow-hidden rounded-full">
@@ -72,9 +74,9 @@ export default function InternationalDataOptions({
           <span className="text-xl font-medium">{selectedCountry.name}</span>
         </div>
         <p className="text-base mb-8">
-          How much data do you want to add?
+          {internationalDataOptions.subtitle}
           <br />
-          The data will be active until the end of the month.
+          {internationalDataOptions.description}
         </p>
 
         <div className="space-y-4 mb-10">
@@ -105,7 +107,7 @@ export default function InternationalDataOptions({
           onClick={handleConfirm}
           disabled={!selectedOptionId}
         >
-          Request Top-up
+          {internationalDataOptions.requestButton}
         </Button>
       </div>
     </div>

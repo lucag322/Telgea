@@ -1,19 +1,29 @@
-"use client";
 import { UIProvider } from "./context/UIContext";
-import HeaderWithContext from "./components/Header";
+import { LoadingErrorProvider } from "./context/LoadingErrorContext";
+import { NavigationProvider } from "./context/NavigationContext";
+import { DataStoreProvider } from "./context/DataStoreContext";
 import "./globals.css";
+import Header from "./components/Header";
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className="antialiased font-selecta px-5 min-h-screen flex flex-col">
+      <body>
         <UIProvider>
-          <HeaderWithContext />
-          <main className="flex-1 flex flex-col">{children}</main>
+          <LoadingErrorProvider>
+            <NavigationProvider>
+              <DataStoreProvider>
+                <div className="px-6 pb-16">
+                  <Header />
+                  <main className="container mx-auto pt-4">{children}</main>
+                </div>
+              </DataStoreProvider>
+            </NavigationProvider>
+          </LoadingErrorProvider>
         </UIProvider>
       </body>
     </html>

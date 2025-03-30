@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import PageTitle from "./ui/PageTitle";
 import DatePicker from "./ui/DatePicker";
-import Image from "next/image";
+import { topUpPageData } from "@/data";
 
 interface InternationalDataDateSelectorProps {
   selectedCountry: {
@@ -26,11 +27,12 @@ export default function InternationalDataDateSelector({
   onRequestTopUp,
 }: InternationalDataDateSelectorProps) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const { countrySelector } = topUpPageData;
 
   return (
     <div className="flex flex-col h-full min-h-[calc(100vh-150px)]">
       <div>
-        <PageTitle title="Top up International Data" />
+        <PageTitle title={countrySelector.title} />
 
         <div className="flex items-center mb-4">
           <div className="w-8 h-8 mr-3 overflow-hidden rounded-full">
@@ -45,8 +47,8 @@ export default function InternationalDataDateSelector({
           <span className="font-medium">{selectedCountry.name}</span>
         </div>
 
-        <h2 className="text-xl font-bold mb-6">
-          Add {selectedDataOption.title}
+        <h2 className="text-3xl font-bold mb-6">
+          {`Add ${selectedDataOption.title}`}
         </h2>
       </div>
 

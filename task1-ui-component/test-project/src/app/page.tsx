@@ -1,26 +1,22 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import TopUpForm from "./components/TopUpForm";
 import ErrorOverlay from "./components/ui/ErrorOverlay";
 import LoadingOverlay from "./components/ui/LoadingOverlay";
 import RequestErrorOverlay from "./components/ui/RequestErrorOverlay";
 import TopUpOptions from "./components/TopUpOptions";
-import { useUI } from "./context/UIContext";
+import { useNavigation } from "./context/NavigationContext";
+import { useLoadingError } from "./context/LoadingErrorContext";
 import { topUpPageData } from "@/data";
 import TopUpDateSelection from "./components/TopUpDateSelector";
 import CountrySelector from "./components/CountrySelector";
 import InternationalDataOptions from "./components/InternationalDataOptions";
 import InternationalDataDateSelector from "./components/InternationalDataDateSelector";
 import SuccessConfirmation from "./components/SuccessConfirmation";
-
-type Step =
-  | "form"
-  | "options"
-  | "dateSelect"
-  | "countrySelect"
-  | "internationalDataOptions"
-  | "internationalDateSelect"
-  | "success";
+import ErrorBoundary from "./components/ui/ErrorBoundary";
+import { api, TopUpRequest } from "./services/api";
+import { useDataStore } from "./context/DataStoreContext";
+import { useUI } from "./context/UIContext";
 
 interface Country {
   code: string;
@@ -35,64 +31,206 @@ interface InternationalDataOption {
 }
 
 export default function Home() {
-  const [localStep, setLocalStep] = useState<Step>("form");
-  const [isLoading, setIsLoading] = useState(false);
-  const [showError, setShowError] = useState(false);
-  const [showRequestError, setShowRequestError] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<{
-    id: string;
-    title: string;
-    subtitle: string;
-  } | null>(null);
-  const [activationDate, setActivationDate] = useState<Date | null>(null);
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
-  const [selectedDataOption, setSelectedDataOption] =
-    useState<InternationalDataOption | null>(null);
-  const [previousStep, setPreviousStep] = useState<Step>("form");
+  const { isLoading, error, clearError, setError, withErrorHandling } =
+    useLoadingError();
 
-  const { setShowHeaderCancel, setOnHeaderCancel, setCurrentStep } = useUI();
+  const { currentStep, navigateTo, goBack, resetNavigation } = useNavigation();
 
-  const updateStep = (step: Step) => {
-    setLocalStep(step);
-    setCurrentStep(step);
+  const {
+    selectedOption,
+    setSelectedOption,
+    selectedCountry,
+    setSelectedCountry,
+    selectedDataOption,
+    setSelectedDataOption,
+    activationDate,
+    setActivationDate,
+    resetData,
+  } = useDataStore();
+
+  useHeaderControl(currentStep);
+
+  const handlePhoneSubmit = (success: boolean) => {
+    if (success) {
+      navigateTo("options");
+    } else {
+      setError({
+        type: "validation",
+        message: topUpPageData.error.message,
+      });
+    }
   };
 
-  useEffect(() => {
-    const handleCancel = () => {
-      if (localStep === "options") {
-        updateStep("form");
-      } else if (localStep === "dateSelect") {
-        updateStep("options");
-      } else if (localStep === "countrySelect") {
-        updateStep("options");
-      } else if (localStep === "internationalDataOptions") {
-        updateStep("countrySelect");
-      } else if (localStep === "internationalDateSelect") {
-        updateStep("internationalDataOptions");
-      }
+  const handleOptionSelect = (optionId: string) => {
+    const option = topUpPageData.topUpOptions.options.find(
+      (opt) => opt.id === optionId
+    );
+    if (option) {
+      setSelectedOption(option);
 
-      if (localStep === "internationalDateSelect") {
-        setSelectedDataOption(null);
-      } else if (localStep === "internationalDataOptions") {
-        setSelectedCountry(null);
-      } else if (localStep === "options") {
-        setSelectedOption(null);
+      if (optionId === "data5gb" || optionId === "minutes200") {
+        navigateTo("dateSelect");
+      } else if (optionId === "dataInt") {
+        navigateTo("countrySelect");
       }
+    }
+  };
+
+  const handleCountrySelect = (country: Country) => {
+    setSelectedCountry(country);
+    navigateTo("internationalDataOptions");
+  };
+
+  const handleInternationalDataOptionSelect = (
+    option: InternationalDataOption
+  ) => {
+    setSelectedDataOption(option);
+    navigateTo("internationalDateSelect");
+  };
+
+  const handleBack = () => {
+    goBack();
+  };
+
+  const handleRequestTopUp = (date: Date) => {
+    setActivationDate(date);
+
+    const payload: TopUpRequest = {
+      option: selectedOption?.id,
+      country: selectedCountry?.code,
+      dataOption: selectedDataOption?.id,
+      date: date,
     };
 
-    if (
-      [
-        "options",
-        "dateSelect",
-        "countrySelect",
-        "internationalDataOptions",
-        "internationalDateSelect",
-      ].includes(localStep)
-    ) {
-      setShowHeaderCancel(true);
-      setOnHeaderCancel(() => handleCancel);
+    withErrorHandling(api.requestTopUp(payload), () => navigateTo("success"));
+  };
+
+  const handleRequestRetry = () => {
+    const payload: TopUpRequest = {
+      option: selectedOption?.id,
+      country: selectedCountry?.code,
+      dataOption: selectedDataOption?.id,
+      date: activationDate || undefined,
+    };
+
+    withErrorHandling(api.retryTopUp(payload), () => navigateTo("success"));
+  };
+
+  const handleReset = () => {
+    resetNavigation();
+    resetData();
+  };
+
+  return (
+    <>
+      {isLoading && <LoadingOverlay />}
+
+      {error.isError && error.type === "validation" && (
+        <ErrorOverlay
+          title={topUpPageData.error.title}
+          message={error.message || topUpPageData.error.message}
+          buttonText={topUpPageData.error.buttonText}
+          onRetry={clearError}
+        />
+      )}
+
+      {error.isError && (error.type === "api" || error.type === "network") && (
+        <RequestErrorOverlay
+          onRetry={handleRequestRetry}
+          onContactSupport={clearError}
+        />
+      )}
+
+      <div className="flex flex-col items-center justify-center">
+        <div className="w-full max-w-md">
+          <ErrorBoundary>{renderCurrentStep()}</ErrorBoundary>
+        </div>
+      </div>
+    </>
+  );
+
+  function renderCurrentStep() {
+    switch (currentStep) {
+      case "form":
+        return <TopUpForm onSubmit={handlePhoneSubmit} />;
+
+      case "options":
+        return (
+          <TopUpOptions
+            userName={topUpPageData.topUpOptions.greeting.replace(
+              "{name}",
+              "Name"
+            )}
+            options={topUpPageData.topUpOptions.options}
+            onSelect={handleOptionSelect}
+          />
+        );
+
+      case "dateSelect":
+        return selectedOption ? (
+          <TopUpDateSelection
+            selectedOption={selectedOption}
+            onBack={handleBack}
+            onRequestTopUp={handleRequestTopUp}
+          />
+        ) : null;
+
+      case "countrySelect":
+        return (
+          <CountrySelector onBack={handleBack} onSelect={handleCountrySelect} />
+        );
+
+      case "internationalDataOptions":
+        return selectedCountry ? (
+          <InternationalDataOptions
+            selectedCountry={selectedCountry}
+            onBack={handleBack}
+            onSelectOption={handleInternationalDataOptionSelect}
+          />
+        ) : null;
+
+      case "internationalDateSelect":
+        return selectedCountry && selectedDataOption ? (
+          <InternationalDataDateSelector
+            selectedCountry={selectedCountry}
+            selectedDataOption={selectedDataOption}
+            onBack={handleBack}
+            onRequestTopUp={handleRequestTopUp}
+          />
+        ) : null;
+
+      case "success":
+        return (
+          <SuccessConfirmation
+            activationDate={activationDate || undefined}
+            onClose={handleReset}
+          />
+        );
+
+      default:
+        return <TopUpForm onSubmit={handlePhoneSubmit} />;
+    }
+  }
+}
+
+function useHeaderControl(currentStep: unknown) {
+  const { setShowHeaderCancel, setOnHeaderCancel } = useUI();
+  const { goBack } = useNavigation();
+
+  useEffect(() => {
+    const showCancel = [
+      "options",
+      "dateSelect",
+      "countrySelect",
+      "internationalDataOptions",
+      "internationalDateSelect",
+    ].includes(currentStep as string);
+
+    setShowHeaderCancel(showCancel);
+
+    if (showCancel) {
+      setOnHeaderCancel(() => goBack);
     } else {
-      setShowHeaderCancel(false);
       setOnHeaderCancel(null);
     }
 
@@ -100,190 +238,5 @@ export default function Home() {
       setShowHeaderCancel(false);
       setOnHeaderCancel(null);
     };
-  }, [localStep, setShowHeaderCancel, setOnHeaderCancel, setCurrentStep]);
-
-  const handlePhoneSubmit = (success: boolean) => {
-    if (success) {
-      updateStep("options");
-    } else {
-      setShowError(true);
-    }
-  };
-
-  const handleErrorRetry = () => {
-    setShowError(false);
-  };
-
-  const handleOptionSelect = (optionId: string) => {
-    const option = topUpOptions.find((opt) => opt.id === optionId);
-    if (option) {
-      setSelectedOption(option);
-
-      if (optionId === "data5gb" || optionId === "minutes200") {
-        updateStep("dateSelect");
-      } else if (optionId === "dataInt") {
-        updateStep("countrySelect");
-      }
-    }
-  };
-
-  const handleCountrySelect = (country: Country) => {
-    setSelectedCountry(country);
-    updateStep("internationalDataOptions");
-  };
-
-  const handleInternationalDataOptionSelect = (
-    option: InternationalDataOption
-  ) => {
-    setSelectedDataOption(option);
-    updateStep("internationalDateSelect");
-  };
-
-  const handleBack = () => {
-    if (localStep === "dateSelect") {
-      updateStep("options");
-    } else if (localStep === "countrySelect") {
-      updateStep("options");
-    } else if (localStep === "internationalDataOptions") {
-      updateStep("countrySelect");
-    } else if (localStep === "internationalDateSelect") {
-      updateStep("internationalDataOptions");
-    } else {
-      updateStep("form");
-    }
-  };
-
-  const handleRequestTopUp = (date: Date) => {
-    setActivationDate(date);
-    setIsLoading(true);
-    setPreviousStep(localStep);
-
-    setTimeout(() => {
-      setIsLoading(false);
-      const isSuccess = Math.random() > 0.3;
-
-      if (isSuccess) {
-        updateStep("success");
-      } else {
-        setShowRequestError(true);
-      }
-    }, 2000);
-  };
-
-  const handleRequestRetry = () => {
-    setShowRequestError(false);
-    setIsLoading(true);
-
-    setTimeout(() => {
-      setIsLoading(false);
-      updateStep("success");
-    }, 1500);
-  };
-
-  const handleContactSupport = () => {
-    setShowRequestError(false);
-  };
-
-  const handleCloseSuccess = () => {
-    updateStep("form");
-    setSelectedOption(null);
-    setSelectedCountry(null);
-    setSelectedDataOption(null);
-    setActivationDate(null);
-  };
-
-  const topUpOptions = [
-    {
-      id: "data5gb",
-      title: "+ 5GB Fast Data",
-      subtitle: "Home Zone",
-    },
-    {
-      id: "minutes200",
-      title: "+ 200 Minutes",
-      subtitle: "Home Zone",
-    },
-    {
-      id: "dataInt",
-      title: "Get International Data",
-      subtitle: "Outside Homezone",
-    },
-  ];
-
-  return (
-    <>
-      {isLoading && <LoadingOverlay />}
-
-      {showError && (
-        <ErrorOverlay
-          title={topUpPageData.error.title}
-          message={topUpPageData.error.message}
-          buttonText={topUpPageData.error.buttonText}
-          onRetry={handleErrorRetry}
-        />
-      )}
-
-      {showRequestError && (
-        <RequestErrorOverlay
-          onRetry={handleRequestRetry}
-          onContactSupport={handleContactSupport}
-        />
-      )}
-
-      <div className="flex flex-col items-center justify-center">
-        <div className="w-full max-w-md">
-          {localStep === "form" && <TopUpForm onSubmit={handlePhoneSubmit} />}
-
-          {localStep === "options" && (
-            <TopUpOptions
-              userName="Name"
-              options={topUpOptions}
-              onSelect={handleOptionSelect}
-            />
-          )}
-
-          {localStep === "dateSelect" && selectedOption && (
-            <TopUpDateSelection
-              selectedOption={selectedOption}
-              onBack={handleBack}
-              onRequestTopUp={handleRequestTopUp}
-            />
-          )}
-
-          {localStep === "countrySelect" && (
-            <CountrySelector
-              onBack={handleBack}
-              onSelect={handleCountrySelect}
-            />
-          )}
-
-          {localStep === "internationalDataOptions" && selectedCountry && (
-            <InternationalDataOptions
-              selectedCountry={selectedCountry}
-              onBack={handleBack}
-              onSelectOption={handleInternationalDataOptionSelect}
-            />
-          )}
-
-          {localStep === "internationalDateSelect" &&
-            selectedCountry &&
-            selectedDataOption && (
-              <InternationalDataDateSelector
-                selectedCountry={selectedCountry}
-                selectedDataOption={selectedDataOption}
-                onBack={handleBack}
-                onRequestTopUp={handleRequestTopUp}
-              />
-            )}
-
-          {localStep === "success" && (
-            <SuccessConfirmation
-              activationDate={activationDate || undefined}
-              onClose={handleCloseSuccess}
-            />
-          )}
-        </div>
-      </div>
-    </>
-  );
+  }, [currentStep, setShowHeaderCancel, setOnHeaderCancel, goBack]);
 }

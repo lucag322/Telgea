@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Button from "./Button";
+import { topUpPageData } from "@/data";
 
 interface DatePickerProps {
   onSelect: (date: Date | null) => void;
@@ -15,8 +16,8 @@ export default function DatePicker({
   onSelect,
   onBack,
   onConfirm,
-  confirmButtonText = "Request Top-up",
-  backButtonText = "Back",
+  confirmButtonText = topUpPageData.datePicker.requestButton,
+  backButtonText = topUpPageData.common.backButton,
 }: DatePickerProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);

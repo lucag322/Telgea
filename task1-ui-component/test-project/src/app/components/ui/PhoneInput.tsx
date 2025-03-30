@@ -28,7 +28,7 @@ export default function PhoneInput({
           onChange={handleChange}
           className="w-full text-3xl font-medium border-none bg-transparent p-0 focus:outline-none focus:ring-0"
           aria-invalid={error ? "true" : "false"}
-          placeholder="37829016"
+          placeholder="ex: 37829016"
         />
       </div>
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}

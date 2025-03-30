@@ -3,7 +3,7 @@ import { useState } from "react";
 import PageTitle from "./ui/PageTitle";
 import PhoneInput from "./ui/PhoneInput";
 import Button from "./ui/Button";
-import StepsList from "./ui/StepList";
+import StepsList, { StepItemData } from "./ui/StepList";
 import LoadingOverlay from "./ui/LoadingOverlay";
 import { topUpPageData } from "@/data";
 
@@ -36,22 +36,28 @@ export default function TopUpForm({ onSubmit }: TopUpFormProps) {
 
     setIsLoading(true);
 
-    // Simuler une requête API
     setTimeout(() => {
       console.log("Confirmation code sent to", phoneNumber);
       setIsLoading(false);
 
-      // 80% de chance de réussite pour la démonstration
       const isSuccess = Math.random() > 0.2;
       onSubmit(isSuccess);
     }, 2000);
   };
 
+  const stepsData: StepItemData[] = steps.items.map(
+    (text: string, index: number) => ({
+      number: index + 1,
+      title: text,
+      description: "",
+    })
+  );
+
   return (
     <>
       {isLoading && <LoadingOverlay />}
 
-      <>
+      <div className="md:pb-4">
         <PageTitle
           title={pageTitle.title}
           highlightedText={pageTitle.highlightedText}
@@ -74,8 +80,8 @@ export default function TopUpForm({ onSubmit }: TopUpFormProps) {
           {button.text}
         </Button>
 
-        <StepsList title={steps.title} steps={steps.items} />
-      </>
+        <StepsList title={steps.title} steps={stepsData} />
+      </div>
     </>
   );
 }

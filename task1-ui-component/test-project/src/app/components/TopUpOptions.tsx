@@ -31,7 +31,7 @@ export default function TopUpOptions({ options, onSelect }: TopUpOptionsProps) {
   return (
     <>
       <PageTitle
-        title="Hi (Name)!"
+        title="Hi Theis!"
         description="You can now choose the top-up you want to request for your plan."
       />
 

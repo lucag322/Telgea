@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import Button from "./ui/Button";
+import { topUpPageData } from "@/data";
 
 interface SuccessConfirmationProps {
   activationDate?: Date;
@@ -11,6 +12,8 @@ export default function SuccessConfirmation({
   activationDate,
   onClose,
 }: SuccessConfirmationProps) {
+  const { success, button } = topUpPageData;
+
   const formattedDate = activationDate
     ? activationDate.toLocaleDateString("en-US", {
         month: "long",
@@ -19,9 +22,13 @@ export default function SuccessConfirmation({
       })
     : null;
 
+  const successMessage = formattedDate
+    ? success.withDate.replace("{date}", formattedDate)
+    : success.message;
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-150px)] justify-between">
-      <div className="flex-grow flex flex-col items-center justify-center text-center px-6">
+      <div className="flex-grow flex flex-col items-center justify-center text-center">
         <div className="mb-8 mt-8">
           <Image
             src="/success.png"
@@ -33,25 +40,17 @@ export default function SuccessConfirmation({
           />
         </div>
 
-        <h1 className="text-2xl font-bold mb-6">
-          That's it! Your top-up request has been sent to your IT team for
-          approval.
-        </h1>
+        <h1 className="text-3xl font-bold mb-6">{success.title}</h1>
+        <div className="px-8">
+          <p className="mb-4">{success.subtitle}</p>
 
-        <p className="text-gray-600 mb-4">
-          You'll be notified by email and SMS when the top-up is active.
-        </p>
-
-        <p className="text-gray-600">
-          It will be available immediately after approval or at midnight CET on
-          your requested activation date.
-          {activationDate && ` (${formattedDate})`}
-        </p>
+          <p>{success.description}</p>
+        </div>
       </div>
 
       <div className="p-6 w-full flex justify-center">
         <Button variant="ghost" size="md" onClick={onClose}>
-          Close
+          {button.doneText}
         </Button>
       </div>
     </div>

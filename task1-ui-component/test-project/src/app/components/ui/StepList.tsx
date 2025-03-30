@@ -1,13 +1,13 @@
 import StepItem from "./StepItem";
 
-interface Step {
+export interface StepItemData {
   number: number;
   title: string;
   description: string;
 }
 
 interface StepsListProps {
-  steps: Step[];
+  steps: StepItemData[];
   title?: string;
   className?: string;
 }

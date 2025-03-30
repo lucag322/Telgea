@@ -16,7 +16,7 @@
     "continueText": "Continue",
     "backText": "Back",
     "requestText": "Request Top-up",
-    "doneText": "Done"
+    "doneText": "Close"
   },
   "loading": {
     "title": "Sending confirmation code...",
@@ -25,7 +25,19 @@
   "error": {
     "title": "Couldn't verify code",
     "message": "Please try again",
-    "buttonText": "Try again"
+    "buttonText": "Try again",
+    "requestError": {
+      "title": "Couldn't send request",
+      "message": "Please try again",
+      "tryAgainButton": "Try again",
+      "supportButton": "Contact Support"
+    },
+    "boundaryError": {
+      "title": "Something went wrong",
+      "message": "We're sorry, but we encountered an unexpected error.",
+      "tryAgainButton": "Try again",
+      "reloadButton": "Reload page"
+    }
   },
   "topUpOptions": {
     "greeting": "Hi {name}!",
@@ -70,50 +82,55 @@
     "tomorrow": "Tomorrow"
   },
   "success": {
-    "title": "Success!",
+    "title": "That's it! Your top-up request has been sent to your IT team for approval.",
+    "subtitle": "You'll be notified by email and SMS when the top-up is active.",
+    "description": "It will be available immediately after approval or at midnight CET on your requested activation date.",
     "message": "Your top-up request has been submitted.",
     "withDate": "Your top-up request has been submitted to be activated on {date}."
   },
+  "common": {
+    "backButton": "Back",
+    "closeButton": "Close"
+  },
+  "datePicker": {
+    "title": "When should the top-up be activated?",
+    "requestButton": "Request Top-up"
+  },
+  "countrySelector": {
+    "title": "Top up International Data",
+    "subtitle": "Which country should the data work in?",
+    "searchPlaceholder": "Search country"
+  },
+  "internationalDataOptions": {
+    "subtitle": "How much data do you want to add?",
+    "description": "The data will be active until the end of the month.",
+    "requestButton": "Request Top-up"
+  },
   "steps": {
-    "title": "How it works",
+    "title": "How it works:",
     "items": [
-      {
-        "number": 1,
-        "title": "Confirm your phone number",
-        "description": "We will send you a confirmation code by text."
-      },
-      {
-        "number": 2,
-        "title": "Select a top-up",
-        "description": "You can add both data and more minutes."
-      },
-      {
-        "number": 3,
-        "title": "Wait for approval",
-        "description": "Your IT administrator will be notified and will inform you upon approval."
-      }
+      "Confirm your phone number",
+      "Enter the confirmation code from SMS",
+      "Choose your top-up option",
+      "Get confirmation of your request"
     ]
   },
   "header": {
     "cancelButton": "Cancel"
   },
   "ui": {
-    "backToOptions": "Back to options",
-    "selectDate": "Select a date",
-    "previousMonth": "Previous month",
-    "nextMonth": "Next month",
-    "selectableDate": "Selectable date",
-    "nonSelectableDate": "Non-selectable date",
-    "selectedDate": "Selected date"
+    "back": "Back",
+    "next": "Next",
+    "today": "Today",
+    "tomorrow": "Tomorrow"
   },
-  "errors": {
-    "generic": "Something went wrong. Please try again.",
-    "network": "Network error. Please check your connection.",
-    "dateInPast": "Cannot select a date in the past."
+  "networkError": {
+    "title": "Network error",
+    "message": "Please check your connection and try again",
+    "buttonText": "Try again"
   },
   "notifications": {
-    "topUpRequested": "Top-up requested successfully.",
-    "topUpScheduled": "Top-up scheduled for {date}.",
-    "topUpCancelled": "Top-up request cancelled."
+    "success": "Top-up request successful",
+    "scheduled": "Top-up scheduled for {date}"
   }
 }
