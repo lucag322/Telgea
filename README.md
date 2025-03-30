@@ -22,6 +22,24 @@ This repository contains my implementation of the "Top-Up for Users" component f
 - Error handling and loading states
 - Responsive design matching the Figma specifications
 
+## How to Run
+
+1. Clone the repository
+2. Navigate to the project directory: `cd task1-ui-component/test-project`
+3. Install dependencies: `npm install`
+4. Run the development server: `npm run dev`
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## Project Structure
+
+- `/app` - Next.js app directory with routes and page components
+- `/app/components` - UI components organized by feature
+- `/app/context` - Context providers for state management
+- `/app/hooks` - Custom React hooks
+- `/app/services` - Mock API services
+- `/data` - JSON data files for texts and mock content
+- `/public` - Static assets including images and icons
+
 ## Technical Notes & Optimizations
 
 ### Architecture Decisions
@@ -76,19 +94,8 @@ With more time, I would add:
 - Server-side rendering optimization
 - More animated transitions between steps
 
-## How to Run
+## Task 3: Handling Design Inconsistencies & Responsiveness
 
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Run the development server: `npm run dev`
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+When working with a designer, I would first discuss the inconsistencies to ensure alignment with the intended design system. Issues like uneven spacing or font variations should be resolved to maintain visual consistency and improve maintainability. For responsiveness, I would clarify breakpoints and propose a flexible layout that adapts well across devices, ensuring usability. If needed, I’d create a quick prototype or suggest CSS techniques (e.g., fluid typography, grid adjustments) to demonstrate potential improvements. The key is open communication and balancing design intent with technical feasibility to deliver a polished, scalable UI.
 
-## Project Structure
 
-- `/app` - Next.js app directory with routes and page components
-- `/app/components` - UI components organized by feature
-- `/app/context` - Context providers for state management
-- `/app/hooks` - Custom React hooks
-- `/app/services` - Mock API services
-- `/data` - JSON data files for texts and mock content
-- `/public` - Static assets including images and icons
