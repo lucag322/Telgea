@@ -5,10 +5,13 @@ import PhoneInput from "./ui/PhoneInput";
 import Button from "./ui/Button";
 import StepsList from "./ui/StepList";
 import LoadingOverlay from "./ui/LoadingOverlay";
-
 import { topUpPageData } from "@/data";
 
-export default function TopUpForm() {
+interface TopUpFormProps {
+  onSubmit: (success: boolean) => void;
+}
+
+export default function TopUpForm({ onSubmit }: TopUpFormProps) {
   const [phoneNumber, setPhoneNumber] = useState("34426798");
   const [phoneError, setPhoneError] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
@@ -31,15 +34,17 @@ export default function TopUpForm() {
       return;
     }
 
-    // Activer l'overlay de chargement
     setIsLoading(true);
 
-    // Simuler une requête API (3 secondes pour voir l'effet)
+    // Simuler une requête API
     setTimeout(() => {
       console.log("Confirmation code sent to", phoneNumber);
       setIsLoading(false);
-      // Ici vous pourriez rediriger vers la page suivante ou afficher un message de succès
-    }, 3000);
+
+      // 80% de chance de réussite pour la démonstration
+      const isSuccess = Math.random() > 0.2;
+      onSubmit(isSuccess);
+    }, 2000);
   };
 
   return (

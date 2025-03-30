@@ -12,11 +12,44 @@
   },
   "button": {
     "text": "Get confirmation code",
-    "loadingText": "Sending..."
+    "loadingText": "Sending...",
+    "continueText": "Continue",
+    "doneText": "Done"
   },
   "loading": {
     "title": "Sending confirmation code...",
     "subtitle": "Please wait"
+  },
+  "error": {
+    "title": "Couldn't verify code",
+    "message": "Please try again",
+    "buttonText": "Try again"
+  },
+  "topUpOptions": {
+    "greeting": "Hi {name}!",
+    "description": "You can now choose the top-up you want to request for your plan.",
+    "cancelButton": "Cancel",
+    "options": [
+      {
+        "id": "data5gb",
+        "title": "+ 5GB Fast Data",
+        "subtitle": "Home Zone"
+      },
+      {
+        "id": "minutes200",
+        "title": "+ 200 Minutes",
+        "subtitle": "Home Zone"
+      },
+      {
+        "id": "dataInt",
+        "title": "Get International Data",
+        "subtitle": "Outside Homezone"
+      }
+    ]
+  },
+  "success": {
+    "title": "Success!",
+    "message": "Your top-up request has been submitted."
   },
   "steps": {
     "title": "How it works",
@@ -37,14 +70,5 @@
         "description": "Your IT administrator will be notified and will inform you upon approval."
       }
     ]
-  },
-  "success": {
-    "title": "Confirmation code sent!",
-    "description": "Please check your phone for the SMS with your verification code."
-  },
-  "error": {
-    "title": "Something went wrong",
-    "description": "We couldn't send the confirmation code. Please try again later.",
-    "buttonText": "Try again"
   }
 }
